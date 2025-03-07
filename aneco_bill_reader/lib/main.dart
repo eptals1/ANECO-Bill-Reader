@@ -116,8 +116,51 @@ class _HomeScreenState extends State<HomeScreen> {
     final recognizedText = await _textRecognizer.processImage(inputImage);
 
     if (recognizedText.text.isNotEmpty) {
+      // Extract important details using regex or simple string searches
+      String accountNumber = _extractDetail(
+        recognizedText.text,
+        "Account Number:",
+      );
+      String accountName = _extractDetail(recognizedText.text, "Account Name:");
+      String powerRate = _extractDetail(recognizedText.text, "Power Rate");
+      String presentReading = _extractDetail(
+        recognizedText.text,
+        "Present Reading",
+      );
+      String previousReading = _extractDetail(
+        recognizedText.text,
+        "Previous Reading",
+      );
+      String consumption = _extractDetail(
+        recognizedText.text,
+        "kWh Consumption",
+      );
+      String substation = _extractDetail(recognizedText.text, "Substation");
+      String dueDate = _extractDetail(recognizedText.text, "Due Date");
+      String arrears = _extractDetail(recognizedText.text, "Arrears");
+      String surcharge = _extractDetail(recognizedText.text, "Surcharge");
+      String surchargeEVAT = _extractDetail(
+        recognizedText.text,
+        "Surcharge EVAT",
+      );
+      String totalAmount = _extractDetail(recognizedText.text, "TOTAL AMOUNT");
+
       setState(() {
-        textToRead = recognizedText.text; // Set the extracted text for reading
+        // Combining all the extracted fields into a readable format
+        textToRead = """
+          Account Number: $accountNumber
+          Account Name: $accountName
+          Power Rate: $powerRate
+          Present Reading: $presentReading
+          Previous Reading: $previousReading
+          kWh Consumption: $consumption
+          Substation: $substation
+          Due Date: $dueDate
+          Arrears: $arrears
+          Surcharge: $surcharge
+          Surcharge EVAT: $surchargeEVAT
+          TOTAL AMOUNT: $totalAmount
+          """;
         _image = null; // Remove image after processing
       });
     } else {
@@ -126,6 +169,17 @@ class _HomeScreenState extends State<HomeScreen> {
             "No text found. Please try again."; // Handle no text detected
       });
     }
+  }
+
+  String _extractDetail(String text, String keyword) {
+    // Regex to find the detail after the keyword, case-insensitive,
+    // allowing whitespace around the keyword.
+    final RegExp regExp = RegExp(
+      r'(?<=\s*\b$keyword\b\s*)(.*?)',
+      caseSensitive: true,
+    );
+    final match = regExp.firstMatch(text);
+    return match != null ? match.group(0)?.trim() ?? 'N/A' : 'N/A';
   }
 
   // Pick an image using the camera or gallery
@@ -271,9 +325,9 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Text(
-                    textToRead,
-                    style: TextStyle(fontSize: 20),
-                    textAlign: TextAlign.center,
+                    //textToRead,
+                    //style: TextStyle(fontSize: 20),
+                    //textAlign: TextAlign.center,
                   ),
                 ),
               ),
